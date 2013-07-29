@@ -10,9 +10,9 @@ class zabbix (
     ensure => present,
     provider => 'gem',
   }
-  if $managerepo {
-    require zabbix::repo
-  }
+#  if $managerepo {
+#    require zabbix::repo
+#  }
 
   if $server {
     class { 'zabbix::server':
