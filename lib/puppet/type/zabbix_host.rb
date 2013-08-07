@@ -11,13 +11,13 @@ Puppet::Type.newtype(:zabbix_host) do
     desc "the name of the hostgroup"
   end
 
-  newproperty(:ip, :namevar => true) do
-    desc "the ip address of the host"
-    validate do |value|
-      return true if valid_v4?(value)
-      raise Puppet::Error, "Invalid IP address #{value.inspect}"
-    end
-  end
+#  newproperty(:ip, :namevar => true) do
+#    desc "the ip address of the host"
+#    validate do |value|
+#      return true if valid_v4?(value)
+#      raise Puppet::Error, "Invalid IP address #{value.inspect}"
+#    end
+#  end
 
   newproperty(:groups, :array_matching => :all) do
     desc "groups this host is a member of"
@@ -26,11 +26,17 @@ Puppet::Type.newtype(:zabbix_host) do
     end
   end
 
-  newproperty(:dnsname) do
-    desc "dnsname of the thing"
+#  newproperty(:dnsname) do
+#    desc "dnsname of the thing"
+#    validate do |val|
+#      fail("groups must be a string #{val.inspect}") unless val =~ /^[A-Za-z]+$/
+#    end
+#  end
+  newproperty(:hostid) do
     validate do |val|
-      fail("groups must be a string #{val.inspect}") unless val =~ /^[A-Za-z]+$/
+      fail("hostid is read only, meh")
     end
+
   end
 
   newproperty(:interfaces, :array_matching => :all) do
