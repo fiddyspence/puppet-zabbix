@@ -1,8 +1,13 @@
 class zabbix::server (
   $mysql_config_hash = {},
-  $manage_mysql,
+  $manage_mysql = false,
   $zabbixmysqlpassword = 'foopassword',
+  $zabbixmysqluser = 'zabbix',
+  $zabbixmysqldatabase = 'zabbix',
   $php_timezone = 'Europe/London',
+  $zabbix_servername = $::hostname,
+  $zabbixhost = 'localhost',
+  $zabbixport = '10051',
 ){
 
   if $manage_mysql {
@@ -12,8 +17,8 @@ class zabbix::server (
       before      => Package[$::zabbix::server_packages],
     }
 
-    mysql::db { 'zabbix':
-      user     => 'zabbix',
+    mysql::db { $::zabbix::server::zabbixmysqldatabase:
+      user     => $::zabbix::server::zabbixmysqluser,
       password => $::zabbix::server::zabbixmysqlpassword,
       host     => 'localhost',
       grant    => ['all'],

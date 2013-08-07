@@ -9,7 +9,6 @@ Puppet::Type.type(:zabbix_hostgroup).provide(:api) do
   end
 
   def self.instances
-# {"groupid"=>"5", "name"=>"Discovered hosts", "internal"=>"1"}
     instances = []
     moo = ZabbixApi.connect( :url => 'http://localhost/zabbix/api_jsonrpc.php', :user => 'Admin', :password => 'zabbix')
     foo = moo.hostgroups.get(:id => 0)
@@ -29,10 +28,14 @@ Puppet::Type.type(:zabbix_hostgroup).provide(:api) do
 
   def create
     moo = ZabbixApi.connect( :url => 'http://localhost/zabbix/api_jsonrpc.php', :user => 'Admin', :password => 'zabbix')
-    moo.hostgroups.create(resource[:name])
+    moo.hostgroups.create(:name => @resource[:name])
   end
 
   def internal
+    @property_hash[:internal]
+  end
+
+  def internal=
     @property_hash[:internal]
   end
 
