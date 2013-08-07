@@ -41,12 +41,7 @@ Puppet::Type.type(:zabbix_host).provide(:api) do
        host['groups'].each do |group|
          groups << group['name']
        end
-#       interfaces=[]
-#       host['interfaces'].each do |interface|
-#         
-#       end
-
-       instances << new(:name => host['host'], :groups => groups, :ensure => :present, :dnsname => host['host'], :interfaces => host['interfaces'])
+       instances << new(:name => host['host'], :groups => groups, :ensure => :present, :interfaces => host['interfaces'], :hostid => host['hostid'])
     end
     instances
   end
@@ -83,5 +78,8 @@ Puppet::Type.type(:zabbix_host).provide(:api) do
   end
   def interfaces 
     @property_hash[:interfaces]
+  end
+  def hostid
+    @property_hash[:hostid]
   end
 end
