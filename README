@@ -2,15 +2,17 @@ zabbix
 
 This is the zabbix module.
 
+It uses https://github.com/vadv/zabbixapi to talk to the JSONRpc API presented by Zabbix, but I am going to change that soon.
+
+It is currently only partially featured - it will install a zabbix server on EL, create hosts and hostgroups.
+
+The Zabbix API is, I apologise for this, not awesome.
+
 License
 -------
-
+Apache 2.
 
 Contact
 -------
+cspence@puppetlabs.com
 
-
-Support
--------
-
-Please log tickets and issues at our [Projects site](http://projects.example.com)
