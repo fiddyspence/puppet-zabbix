@@ -1,5 +1,3 @@
-zabbix
-
 This is the zabbix module.
 
 It uses https://github.com/vadv/zabbixapi to talk to the JSONRpc API presented by Zabbix, but I am going to change that soon.
@@ -7,6 +5,32 @@ It uses https://github.com/vadv/zabbixapi to talk to the JSONRpc API presented b
 It is currently only partially featured - it will install a zabbix server on EL, create hosts and hostgroups.
 
 The Zabbix API is, I apologise for this, not awesome.
+
+Example usage:
+
+    node /zabbix/ inherits default {
+      class { 'zabbix': server => true, manage_mysql => true }
+      zabbix_hostgroup { 'foogroup':
+        ensure   => 'present',
+        internal => '0',
+      }
+      zabbix_hostgroup { 'foogroup':
+        ensure   => 'present',
+        internal => '0',
+      }
+      Zabbix_host <<| |>>
+      Zabbix_hostgroup <| |> -> Zabbix_host <| |>
+    }
+    
+    
+    node default {
+      @@zabbix_host { $::fqdn:
+        ensure     => 'present',
+        groups     => ['Linux servers','foogroup'],
+        interfaces => [ { type => 1, main => 1, ip => $::ipaddress, dns => $::fqdn, port => 10050, useip => 1 } ],
+      }
+      
+    }
 
 License
 -------
