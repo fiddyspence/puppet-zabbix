@@ -10,6 +10,8 @@ class zabbix::server (
   $zabbixport = '10051',
 ){
 
+  include zabbix::credentials
+
   if $manage_mysql {
 
     class { 'mysql::server':

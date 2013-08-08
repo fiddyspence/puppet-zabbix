@@ -7,7 +7,7 @@ class zabbix (
 ) {
 
   package { 'zabbixapi':
-    ensure => present,
+    ensure   => present,
     provider => 'gem',
   }
 #  if $managerepo {

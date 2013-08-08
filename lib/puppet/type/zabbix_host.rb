@@ -22,7 +22,7 @@ Puppet::Type.newtype(:zabbix_host) do
   newproperty(:groups, :array_matching => :all) do
     desc "groups this host is a member of"
     validate do |val|
-      fail("group must be a string #{val.inspect}") unless val =~ /^[A-Za-z]+$/
+      fail("group must be a string #{val.inspect}") unless val =~ /^[A-Za-z\s]+$/
     end
   end
 

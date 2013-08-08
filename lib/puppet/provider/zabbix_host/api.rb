@@ -20,6 +20,10 @@ class ZabbixApi
         }
       )
     end
+    def merge_params(params)
+      foo = JSON.generate(default_options.merge(params)).to_s
+      JSON.parse(foo)
+    end
   end
 end
 Puppet::Type.type(:zabbix_host).provide(:api) do
@@ -34,14 +38,20 @@ Puppet::Type.type(:zabbix_host).provide(:api) do
 
   def self.instances
     instances = []
-    moo = ZabbixApi.connect( :url => 'http://localhost/zabbix/api_jsonrpc.php', :user => 'Admin', :password => 'zabbix')
+    moo = connect()
     foo = moo.hosts.get(:id => 0)
     foo.each do |host|
+       attrs=['ip','useip','type','main','dns','port']
        groups=[]
        host['groups'].each do |group|
          groups << group['name']
        end
-       instances << new(:name => host['host'], :groups => groups, :ensure => :present, :interfaces => host['interfaces'], :hostid => host['hostid'])
+       interfaces=[]
+       host['interfaces'].each do |interfaceid, interface|
+         Puppet.debug "#{interfaceid} #{interface}"
+         interfaces << interface.select{|k,v| attrs.include?(k) }
+       end
+       instances << new(:name => host['host'], :groups => groups, :ensure => :present, :interfaces => interfaces, :hostid => host['hostid'])
     end
     instances
   end
@@ -55,31 +65,43 @@ Puppet::Type.type(:zabbix_host).provide(:api) do
   end
 
   def create
-    moo = ZabbixApi.connect( :url => 'http://localhost/zabbix/api_jsonrpc.php', :user => 'Admin', :password => 'zabbix')
-    moo.hosts.create(:name => @resource[:name])
-  end
-
-  def internal
-    @property_hash[:internal]
-  end
-
-  def groupid
-    @property_hash[:groupid]
-  end
-  def ip
-    '127.0.0.1'
+    moo = connect()
+    groups = []
+    @resource[:groups].each do |group|
+      thegroup = moo.hostgroups.get_id(:name => group)
+      unless thegroup.nil?
+        groups << { :groupid => thegroup }
+      end
+    end
+    Puppet.debug groups.inspect
+    moo.hosts.create_or_update(:host => @resource[:name], :groups => groups, :interfaces => @resource[:interfaces])
   end
 
   def groups
     @property_hash[:groups]
-  end
-  def dnsname
-    @property_hash[:dnsname]
   end
   def interfaces 
     @property_hash[:interfaces]
   end
   def hostid
     @property_hash[:hostid]
+  end
+  def groups=(foo)
+    create()
+  end
+  def interfaces=(foo)
+    create()
+  end
+
+#  private 
+  def self.connect
+    credentials = YAML::load_file('/root/.zabbix')
+    connect=ZabbixApi.connect( :url => "http://#{credentials['host']}/zabbix/api_jsonrpc.php", :user => credentials['username'], :password => credentials['password'] )
+    return connect
+  end
+  def connect
+    credentials = YAML::load_file('/root/.zabbix')
+    connect=ZabbixApi.connect( :url => "http://#{credentials['host']}/zabbix/api_jsonrpc.php", :user => credentials['username'], :password => credentials['password'] )
+    return connect
   end
 end
