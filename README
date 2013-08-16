@@ -14,10 +14,6 @@ Example usage:
         ensure   => 'present',
         internal => '0',
       }
-      zabbix_hostgroup { 'foogroup':
-        ensure   => 'present',
-        internal => '0',
-      }
       Zabbix_host <<| |>>
       Zabbix_hostgroup <| |> -> Zabbix_host <| |>
     }

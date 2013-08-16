@@ -6,7 +6,7 @@ Puppet::Type.newtype(:zabbix_user) do
 
   ensurable
 
-  newparam(:username, :namevar => true) do
+  newparam(:name, :namevar => true) do
     desc "the name of the useruser"
   end
 
@@ -15,6 +15,8 @@ Puppet::Type.newtype(:zabbix_user) do
     validate do |val|
       fail("firstname must be a string #{val.inspect}") unless val =~ /^[A-Za-z\s]+$/
     end
+  end
+
   newproperty(:lastname ) do
     desc "real last name of this user"
     validate do |val|
@@ -41,6 +43,13 @@ Puppet::Type.newtype(:zabbix_user) do
     desc "the password"
     validate do |foo|
       fail('userid is a readonly at the moment')
+    end
+  end
+  newproperty(:groups, :array_matching => :all) do
+    isrequired
+    desc "the groups the user belongs to"
+    validate do |val|
+      fail("lastname must be a string #{val.inspect}") unless val =~ /^[A-Za-z\s]+$/
     end
   end
 
