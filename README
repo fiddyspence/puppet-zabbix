@@ -1,4 +1,4 @@
-This is the zabbix module.
+This is the zabbix module
 
 It uses https://github.com/vadv/zabbixapi to talk to the JSONRpc API presented by Zabbix, but I am going to change that soon.
 

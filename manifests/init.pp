@@ -1,3 +1,5 @@
+# This is the base zabbix class
+
 class zabbix (
   $managerepo = false,
   $server_packages = ['zabbix-server-mysql','zabbix-web-mysql'],

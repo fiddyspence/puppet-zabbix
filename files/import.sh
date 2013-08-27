@@ -1,5 +1,5 @@
 #!/bin/bash
-# a comment
+# a comment that I amended
 cd /usr/share/doc/zabbix-server-mysql-$(rpm -q zabbix-server-mysql | awk -F- '{print $4}')/create
 
 if [ ! $? -eq 0 ]; then
