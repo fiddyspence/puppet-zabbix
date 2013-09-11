@@ -1,5 +1,5 @@
 name    'fiddyspence/zabbix'
-version '0.0.2'
+version '0.0.3'
 source 'https://github.com/fiddyspence/puppet-zabbix'
 author 'fiddyspence'
 license 'Apache License, Version 2.0'
