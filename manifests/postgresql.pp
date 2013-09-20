@@ -49,13 +49,5 @@ class zabbix::postgresql {
     auth_method => 'md5',
     before => Exec['create_zabbix_databases'],
   }
-  postgresql::pg_hba_rule { 'allow local access for root user':
-    description => 'allow local access for zabbix user',
-    type => 'local',
-    database => $::zabbix::server::zabbixdatabase,
-    user => 'root',
-    auth_method => 'ident',
-    before => Exec['create_zabbix_databases'],
-  }
 
 }
