@@ -2,12 +2,12 @@
 // Zabbix GUI configuration file
 global $DB;
 
-$DB['TYPE']     = 'MYSQL';
+$DB['TYPE']     = '<% if scope['zabbix::dbserver'] == 'mysql' %>MYSQL<% else %>POSTGRESQL<% end %>';
 $DB['SERVER']   = 'localhost';
 $DB['PORT']     = '0';
-$DB['DATABASE'] = '<%= @zabbixmysqldatabase %>';
-$DB['USER']     = '<%= @zabbixmysqluser %>';
-$DB['PASSWORD'] = '<%= @zabbixmysqlpassword %>';
+$DB['DATABASE'] = '<%= @zabbixdatabase %>';
+$DB['USER']     = '<%= @zabbixdbuser %>';
+$DB['PASSWORD'] = '<%= @zabbixdbpassword %>';
 
 // SCHEMA is relevant only for IBM_DB2 database
 $DB['SCHEMA'] = '';

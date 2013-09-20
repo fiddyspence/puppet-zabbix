@@ -1,9 +1,10 @@
 class zabbix::server (
   $mysql_config_hash = {},
-  $manage_mysql = false,
-  $zabbixmysqlpassword = 'foopassword',
-  $zabbixmysqluser = 'zabbix',
-  $zabbixmysqldatabase = 'zabbix',
+  $managedb = false,
+  $dbserver = '',
+  $zabbixdbpassword = 'foopassword',
+  $zabbixdbuser = 'zabbix',
+  $zabbixdatabase = 'zabbix',
   $php_timezone = 'Europe/London',
   $zabbix_servername = $::hostname,
   $zabbixhost = 'localhost',
@@ -11,38 +12,21 @@ class zabbix::server (
 ){
 
   include zabbix::credentials
-
-  if $manage_mysql {
-
-    class { 'mysql::server':
-      config_hash => $::zabbix::server::mysql_config_hash,
-      before      => Package[$::zabbix::server_packages],
+  if $managedb {
+    unless $dbserver in ['mysql','postgresql'] {
+      fail ("${::modulename}: You passed ${dbserver} to dbplatform, which is an illegal value - choose 'mysql' or 'postgresql'")
     }
+  }
+  if $managedb and $dbserver != '' {
 
-    mysql::db { $::zabbix::server::zabbixmysqldatabase:
-      user     => $::zabbix::server::zabbixmysqluser,
-      password => $::zabbix::server::zabbixmysqlpassword,
-      host     => 'localhost',
-      grant    => ['all'],
-    }
+    include "zabbix::${dbserver}"
 
   }
-  package { $::zabbix::server_packages:
+  user { 'zabbix':
     ensure => present,
-  } ->
-  file { "${::puppet_vardir}/zabbix":
-    ensure => directory,
-  } ->
-  file { "${::puppet_vardir}/zabbix/import.sh":
-    ensure => file,
-    source => 'puppet:///modules/zabbix/import.sh',
-    mode   => '0755',
-  } ~>
-  exec { 'create_zabbix_databases':
-    command     => "${::puppet_vardir}/zabbix/import.sh",
-    require     => Mysql::Db['zabbix'],
-    creates     => "/usr/share/doc/zabbix-server-mysql-${::zabbix_version}/create/.done",
-    timeout     => 600,
+    before => Exec['create_zabbix_databases'],
+    home   => '/var/lib/zabbix',
+    managehome => 'true',
   }
 
   service { 'zabbix-server':
@@ -55,40 +39,43 @@ class zabbix::server (
     path    => '/etc/zabbix/zabbix_server.conf',
     section => '',
     ensure  => present,
+    require => Anchor['zabbix::db::end'],
     notify  => Service['zabbix-server'],
-    require => Package[$::zabbix::server_packages],
   }
   ini_setting { "zabbix_db":
     setting => 'DBName',
-    value   => 'zabbix',
+    require => Anchor['zabbix::db::end'],
+    value   => $zabbixdatabase,
   }
   ini_setting { "zabbix_dbhost":
     setting => 'DBHost',
+    require => Anchor['zabbix::db::end'],
     value   => 'localhost',
   }
   ini_setting { "zabbix_dbuser":
     setting => 'DBUser',
-    value   => 'zabbix',
+    require => Anchor['zabbix::db::end'],
+    value   => $zabbixdbuser,
   }
   ini_setting { "zabbix_dbpassword":
     setting => 'DBPassword',
-    value   => $zabbixmysqlpassword,
+    require => Anchor['zabbix::db::end'],
+    value   => $zabbixdbpassword,
   }
   
   file { '/etc/httpd/conf.d/zabbix.conf':
     ensure => file,
     content => template('zabbix/zabbix.conf.erb'),
-    require => Package[$::zabbix::server_packages],
+    require => Exec['create_zabbix_databases'],
   } ~>
   service { 'httpd':
     ensure => running,
     enable => true,
-    subscribe => Package[$::zabbix::server_packages],
   }
 
   file { '/etc/zabbix/web/zabbix.conf.php':
     ensure  => file,
     content => template('zabbix/zabbix.conf.php.erb'),
-    require => Package[$::zabbix::server_packages],
+    require => Exec['create_zabbix_databases'],
   }
 }

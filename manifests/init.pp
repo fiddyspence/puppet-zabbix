@@ -2,10 +2,11 @@
 
 class zabbix (
   $managerepo = false,
-  $server_packages = ['zabbix-server-mysql','zabbix-web-mysql'],
   $mysql_config_hash = {},
+  $postgresql_config_hash = {},
   $server = false,
-  $manage_mysql = false,
+  $managedb = false,
+  $dbserver = '',
 ) {
 
   package { 'zabbixapi':
@@ -18,7 +19,8 @@ class zabbix (
 
   if $server {
     class { 'zabbix::server':
-      manage_mysql => $::zabbix::manage_mysql,
+      managedb => $::zabbix::managedb,
+      dbserver => $::zabbix::dbserver,
       mysql_config_hash => $::zabbix::mysql_config_hash,
     }
   }
