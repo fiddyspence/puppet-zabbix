@@ -6,20 +6,25 @@ It is currently only partially featured - it will install a zabbix server on EL,
 
 The Zabbix API is, I apologise for this, not awesome.
 
-Example usage:
+The base class will install a zabbix server, using either MySQL or Postgresql as the backend
 
-    node /zabbix/ inherits default {
-      class { 'zabbix': server => true, manage_mysql => true }
-      zabbix_hostgroup { 'foogroup':
-        ensure   => 'present',
-        internal => '0',
-      }
+Example usage for MySQL:
+
+    node 'zabbixmysql' inherits default {
+      class { 'zabbix': server => true, managedb => true, dbserver => 'mysql' }
       Zabbix_host <<| |>>
-      Zabbix_hostgroup <| |> -> Zabbix_host <| |>
+    }
+
+Example usage for Postgres:
+
+    node 'zabbixpg' inherits default {
+      class { 'zabbix': server => true, managedb => true, dbserver => 'postgresql' }
+      Zabbix_host <<| |>>
     }
     
     
     node default {
+      # Export a host definition, to be imported by the zabbix server
       @@zabbix_host { $::fqdn:
         ensure     => 'present',
         groups     => ['Linux servers','foogroup'],
