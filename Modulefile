@@ -8,5 +8,5 @@ description 'zabbix module'
 project_page 'https://github.com/fiddyspence/puppet-zabbix'
 
 ## Add dependencies, if any:
-dependency 'puppetlabs/mysql', '>= 0.9.0'
+dependency 'puppetlabs/mysql', '>= 0.9.0 <2.0.0'
 dependency 'puppetlabs/inifile', '>= 1.0.0'
