@@ -2,7 +2,7 @@ class zabbix::repo (
   $gpgkeypath = '/etc/pki/rpm-gpg/RPM-GPG-KEY-ZABBIX',
 ){
 
-  anchor { 'zabbix::repo::start: }->
+  anchor { 'zabbix::repo::start': }->
 
   yumrepo { 'zabbix':
     baseurl  => "http://repo.zabbix.com/zabbix/2.0/rhel/${::operatingsystemmajrelease}/\$basearch/",
