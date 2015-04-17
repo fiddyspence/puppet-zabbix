@@ -59,9 +59,4 @@ Puppet::Type.type(:zabbix_user).provide(:api) do
     connect=ZabbixApi.connect( :url => "http://#{credentials['host']}/zabbix/api_jsonrpc.php", :user => credentials['username'], :password => credentials['password'] )
     return connect
   end
-  def self.connect
-    credentials = YAML::load_file('/root/.zabbix')
-    connect=ZabbixApi.connect( :url => "http://#{credentials['host']}/zabbix/api_jsonrpc.php", :user => credentials['username'], :password => credentials['password'] )
-    return connect
-  end
 end
